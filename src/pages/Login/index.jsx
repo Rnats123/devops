@@ -1,10 +1,4 @@
-import {
-  getAuth,
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from 'firebase/auth';
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { InputText } from 'primereact/inputtext';
@@ -12,14 +6,14 @@ import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 
+import { AuthContext } from '../../contexts/authProvider.jsx';
 import { isEmailValid } from '../../utils/isEmailValid.js';
-import { app } from '../../services/firebaseConfig.js';
 
 import './styles.css';
 
-const googleProvider = new GoogleAuthProvider();
-
 export function Login() {
+  const { signInGoogle, signInWithEmail, signed } = useContext(AuthContext);
+
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState(false);
   const [password, setPassword] = useState('');
@@ -27,8 +21,6 @@ export function Login() {
 
   const toast = useRef(null);
   const navigate = useNavigate();
-
-  const auth = getAuth(app);
 
   function handleEmailChange(event) {
     setEmail(event.target.value);
@@ -40,22 +32,22 @@ export function Login() {
     }
   }
 
-  async function signInGoogle() {
+  async function handleSignInWithGoogle() {
     try {
       setIsLoading(true);
 
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
+      await signInGoogle();
 
       navigate('/home');
-
-      console.log({ user });
     } catch (error) {
-      console.log('google ', error);
+      if (error.message == 'firebase') {
+        return;
+      }
+
       toast.current.show({
         severity: 'error',
-        summary: error.name,
-        detail: error.message,
+        summary: 'Erro Interno',
+        detail: 'Tente novamente mais tarde',
       });
     } finally {
       setIsLoading(false);
@@ -64,28 +56,35 @@ export function Login() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    const credentials = {
+      email: event.target[0].value,
+      password: event.target[1].value,
+    };
 
     try {
       setIsLoading(true);
 
-      const userCredentials = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      await signInWithEmail(credentials);
 
       navigate('/home');
-
-      console.log({ userCredentials });
     } catch (error) {
+      if (error.message == 'firebase') {
+        return;
+      }
+
       toast.current.show({
         severity: 'error',
-        summary: error.name,
-        detail: error.message,
+        summary: 'Erro Interno',
+        detail: 'Tente novamente mais tarde',
       });
     } finally {
       setIsLoading(false);
     }
+  }
+
+  if (signed) {
+    navigate('/home');
+    return;
   }
 
   return (
@@ -119,18 +118,18 @@ export function Login() {
           <Button
             className="m-0 mb-3 h-3rem"
             label="Entrar"
-            icon="pi pi-chevron-right"
+            icon="pi pi-arrow-right"
             iconPos="right"
             loading={isLoading}
             type="submit"
             disabled={emailError || !email || !password}
           />
           <Button
-            className="m-0 mb-3 h-3rem flex align-items-center justify-content-center"
+            className="m-0 mb-5 h-3rem flex align-items-center justify-content-center"
             severity="secondary"
             text
             raised
-            onClick={signInGoogle}
+            onClick={handleSignInWithGoogle}
           >
             <img
               className="w-2rem mr-3"
@@ -138,19 +137,6 @@ export function Login() {
               alt="google icon"
             />
             <p>Continuar com Google</p>
-          </Button>
-          <Button
-            className="m-0 mb-5 h-3rem flex align-items-center justify-content-center"
-            severity="secondary"
-            text
-            raised
-          >
-            <img
-              className="w-2rem mr-3"
-              src="https://developers.google.com/site-assets/logo-github.svg"
-              alt="github icon"
-            />
-            <p>Continuar com GitHub</p>
           </Button>
           <Link to="/register">
             <Button className="h-3rem" label="Criar Conta" outlined />

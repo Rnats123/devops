@@ -61,15 +61,9 @@ export function Register() {
     try {
       setIsLoading(true);
 
-      const userCredentials = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      await createUserWithEmailAndPassword(auth, email, password);
 
-      navigate('/home');
-
-      console.log(userCredentials);
+      navigate('/');
     } catch (error) {
       console.log(error);
       toast.current.show({
@@ -121,10 +115,10 @@ export function Register() {
         </span>
         <div
           id="buttons"
-          className="flex align-items-center sm:flex-row-reverse flex-column w-full justify-content-between"
+          className="flex align-items-center flex-column w-full justify-content-between"
         >
           <Button
-            className="sm:m-0 mb-3"
+            className="m-0 mb-5 h-3rem"
             label="Criar Conta"
             iconPos="right"
             loading={isLoading}
@@ -132,7 +126,7 @@ export function Register() {
             disabled={emailError || !email || passwordError || !confirmPassword}
           />
           <Link to="/">
-            <Button label="Fazer login" outlined />
+            <Button className="h-3rem" label="Fazer login" outlined />
           </Link>
         </div>
       </form>
