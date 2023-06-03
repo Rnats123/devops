@@ -1,4 +1,7 @@
+import PropTypes from 'prop-types';
 import { useState } from 'react';
+
+
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
@@ -112,3 +115,22 @@ export function Table({ clientes }) {
     </DataTable>
   );
 }
+
+Table.propTypes = {
+  clientes: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      email: PropTypes.string.isRequired,
+      cpf: PropTypes.string.isRequired,
+      phone: PropTypes.string.isRequired,
+      birthday: PropTypes.string.isRequired,
+      cep: PropTypes.string.isRequired,
+      state: PropTypes.string.isRequired,
+      city: PropTypes.string.isRequired,
+      street: PropTypes.string.isRequired,
+      houseNumber: PropTypes.string.isRequired,
+      complement: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+};
