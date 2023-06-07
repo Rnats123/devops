@@ -1,0 +1,11 @@
+#password,
+#confirmPassword {
+  width: 100% !important;
+}
+
+@media (max-width: 575px) {
+  #buttons button,
+  #buttons a {
+    width: 100%;
+  }
+}
