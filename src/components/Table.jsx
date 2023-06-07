@@ -1,40 +1,33 @@
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 
-
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 
-export function Table({ clientes }) {
+export function Table({ clients, onDeleteClient, onEditClient }) {
   const [globalFilter, setGlobalFilter] = useState(null);
 
   const actionTemplate = (rowData) => {
     return (
-      <div>
+      <div className="w-7rem flex justify-content-between">
         <Button
           icon="pi pi-pencil"
+          rounded
+          outlined
           className="p-button-rounded p-button-success p-mr-2"
-          onClick={() => handleEdit(rowData)}
+          onClick={() => onEditClient(rowData)}
         />
         <Button
           icon="pi pi-trash"
+          rounded
+          outlined
           className="p-button-rounded p-button-danger"
-          onClick={() => handleDelete(rowData)}
+          onClick={() => onDeleteClient(rowData)}
         />
       </div>
     );
-  };
-
-  const handleEdit = (rowData) => {
-    // Lógica para a edição do cliente
-    console.log('Editar cliente:', rowData);
-  };
-
-  const handleDelete = (rowData) => {
-    // Lógica para a exclusão do cliente
-    console.log('Excluir cliente:', rowData);
   };
 
   const renderHeader = () => {
@@ -55,9 +48,10 @@ export function Table({ clientes }) {
 
   return (
     <DataTable
-      scrollable
-      scrollHeight="600px"
-      value={clientes}
+      className="mt-2 max-h-full"
+      responsiveLayout="stack"
+      breakpoint="575px"
+      value={clients}
       paginator
       rows={15}
       rowsPerPageOptions={[10, 15, 30]}
@@ -93,12 +87,11 @@ export function Table({ clientes }) {
         filter
         filterPlaceholder="Filtrar por telefone"
       />
-      <Column field="birthday" header="Data de Nascimento" sortable />
       <Column
         field="address"
         header="Endereço"
         body={(rowData) => (
-          <div>
+          <div className="w-11rem flex flex-column align-items-end sm:align-items-start">
             <p>{rowData.cep}</p>
             <p>{`${rowData.city} - ${rowData.state}`}</p>
             <p>{`${rowData.street}, ${rowData.houseNumber}`}</p>
@@ -117,14 +110,13 @@ export function Table({ clientes }) {
 }
 
 Table.propTypes = {
-  clientes: PropTypes.arrayOf(
+  clients: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       email: PropTypes.string.isRequired,
       cpf: PropTypes.string.isRequired,
       phone: PropTypes.string.isRequired,
-      birthday: PropTypes.string.isRequired,
       cep: PropTypes.string.isRequired,
       state: PropTypes.string.isRequired,
       city: PropTypes.string.isRequired,

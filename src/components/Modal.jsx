@@ -5,34 +5,24 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
-import { Calendar } from 'primereact/calendar';
 import { InputMask } from 'primereact/inputmask';
 
-import { isEmailValid } from '../../utils/isEmailValid.js';
-import { formatDate } from '../../utils/formatDate.js';
+import { Loader } from './Loader';
 
-export function Modal({ visible, onClose }) {
+import { isEmailValid } from '../utils/isEmailValid.js';
+
+export function Modal({ visible, onClose, onSubmit, currentClient }) {
   const [isLoading, setIsLoading] = useState(false);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [errors, setErrors] = useState({});
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    cpf: '',
-    phone: '',
-    birthday: '',
-    cep: '',
-    state: '',
-    city: '',
-    street: '',
-    houseNumber: '',
-    complement: '',
-  });
+  const [formData, setFormData] = useState(currentClient);
 
   useEffect(() => {
     async function loadStates() {
       try {
+        setIsLoading(true);
+
         const response = await fetch(
           'https://servicodados.ibge.gov.br/api/v1/localidades/estados'
         );
@@ -46,7 +36,20 @@ export function Modal({ visible, onClose }) {
     }
 
     loadStates();
-  }, []);
+
+    const [state] = states.filter(
+      (state) => state.sigla === currentClient.state
+    );
+    const newCity = [{ id: '1', nome: currentClient.city }];
+
+    setCities(newCity);
+    setFormData({
+      ...currentClient,
+      state,
+      city: { id: '1', nome: currentClient.city },
+    });
+  }, [currentClient]);
+
 
   function handleSubmit() {
     if (validateForm()) {
@@ -54,8 +57,16 @@ export function Modal({ visible, onClose }) {
         ...formData,
         state: formData.state.sigla,
         city: formData.city.nome,
-        birthday: formatDate(formData.birthday),
       };
+
+      if (currentClient.name) {
+        onSubmit({ clientId: currentClient.id, clientData });
+        console.log('Dados do formulário:', clientData);
+        onClose();
+        return;
+      }
+      onSubmit(clientData);
+
       console.log('Dados do formulário:', clientData);
       onClose();
     }
@@ -77,11 +88,6 @@ export function Modal({ visible, onClose }) {
 
     if (!formData.cpf) {
       newErrors.cpf = true;
-      isValid = false;
-    }
-
-    if (!formData.birthday) {
-      newErrors.birthday = true;
       isValid = false;
     }
 
@@ -191,16 +197,21 @@ export function Modal({ visible, onClose }) {
               label="Cancelar"
               className="p-button-text"
               onClick={onClose}
+              disabled={isLoading}
+
             />
             <Button
               label="Salvar"
               className="p-button-primary mt-3"
               onClick={handleSubmit}
+              disabled={isLoading}
+
             />
           </>
         }
         blockScroll
       >
+        <Loader isLoading={isLoading} />
         <form className="p-fluid flex flex-column gap-3">
           <div className="p-field">
             <label
@@ -277,28 +288,6 @@ export function Modal({ visible, onClose }) {
               className={`mt-1 ${errors.phone ? 'p-invalid' : ''}`}
             />
           </div>
-
-          <div className="p-field">
-            <label
-              className="text-color-secondary text-base ml-2"
-              htmlFor="calendar"
-            >
-              Data de Nascimento
-            </label>
-            <Calendar
-              touchUI
-              id="calendar"
-              placeholder="Informe uma data de nascimento"
-              dateFormat="dd/mm/yy"
-              value={formData.birthday}
-              onChange={(e) => {
-                setErrors({ ...errors, birthday: false });
-                setFormData({ ...formData, birthday: e.target.value });
-              }}
-              className={`mt-1 ${errors.birthday ? 'p-invalid' : ''}`}
-            />
-          </div>
-
           <div className="p-field">
             <label
               className="text-color-secondary text-base ml-2"
@@ -418,10 +407,36 @@ export function Modal({ visible, onClose }) {
 }
 
 Modal.propTypes = {
-  visible: PropTypes.boolean,
+  visible: PropTypes.bool,
   onClose: PropTypes.func.isRequired,
+  onSubmit: PropTypes.func.isRequired,
+  currentClient: PropTypes.shape({
+    id: PropTypes.string,
+    name: PropTypes.string,
+    email: PropTypes.string,
+    cpf: PropTypes.string,
+    phone: PropTypes.string,
+    cep: PropTypes.string,
+    state: PropTypes.string,
+    city: PropTypes.string,
+    street: PropTypes.string,
+    houseNumber: PropTypes.string,
+    complement: PropTypes.string,
+  }),
 };
 
 Modal.defaultProps = {
   visible: false,
+  currentClient: {
+    name: '',
+    email: '',
+    cpf: '',
+    phone: '',
+    cep: '',
+    state: '',
+    city: '',
+    street: '',
+    houseNumber: '',
+    complement: '',
+  },
 };

@@ -1,5 +1,5 @@
 import { useContext, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
@@ -83,8 +83,7 @@ export function Login() {
   }
 
   if (signed) {
-    navigate('/home');
-    return;
+    return <Navigate to="/home" />
   }
 
   return (
