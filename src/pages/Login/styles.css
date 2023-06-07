@@ -1,0 +1,9 @@
+#password,
+#confirmPassword {
+  width: 100% !important;
+}
+
+#buttons button,
+#buttons a {
+  width: 100%;
+}
