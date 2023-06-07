@@ -125,6 +125,4 @@ Table.propTypes = {
       complement: PropTypes.string.isRequired,
     })
   ).isRequired,
-  onDeleteClient: PropTypes.func.isRequired,
-  onEditClient: PropTypes.func.isRequired,
 };

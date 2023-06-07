@@ -22,6 +22,7 @@ export function Modal({ visible, onClose, onSubmit, currentClient }) {
     async function loadStates() {
       try {
         setIsLoading(true);
+
         const response = await fetch(
           'https://servicodados.ibge.gov.br/api/v1/localidades/estados'
         );
@@ -49,6 +50,7 @@ export function Modal({ visible, onClose, onSubmit, currentClient }) {
     });
   }, [currentClient]);
 
+
   function handleSubmit() {
     if (validateForm()) {
       const clientData = {
@@ -64,6 +66,7 @@ export function Modal({ visible, onClose, onSubmit, currentClient }) {
         return;
       }
       onSubmit(clientData);
+
       console.log('Dados do formulário:', clientData);
       onClose();
     }
@@ -195,12 +198,14 @@ export function Modal({ visible, onClose, onSubmit, currentClient }) {
               className="p-button-text"
               onClick={onClose}
               disabled={isLoading}
+
             />
             <Button
               label="Salvar"
               className="p-button-primary mt-3"
               onClick={handleSubmit}
               disabled={isLoading}
+
             />
           </>
         }
