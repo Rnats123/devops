@@ -63,6 +63,9 @@ export function AuthProvider({ children }) {
       sessionStorage.setItem('@AuthFirebase:token', token);
       sessionStorage.setItem('@AuthFirebase:user', JSON.stringify(user));
     } catch (error) {
+      if (error.message === 'Firebase: Error (auth/invalid-email).') {
+        return;
+      }
       toast.current.show({
         severity: 'error',
         summary: error.name,
