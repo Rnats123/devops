@@ -10,7 +10,6 @@ import { clientService } from '../../services/clientService';
 import './styles.css';
 import { Loader } from '../../components/Loader';
 
-
 const defaultInitForm = {
   name: '',
   email: '',
@@ -76,11 +75,10 @@ export function Home() {
       setCurrentClient(defaultInitForm);
       await clientService.createData(clientData);
       loadClients();
-              toast.current.show({
-          severity: 'sucess',
-          summary: 'Cliente criado com sucesso',
-        
-        });
+      toast.current.show({
+        severity: 'success',
+        summary: 'Cliente criado com sucesso',
+      });
     } catch (error) {
       console.log('Deu erro: ', error);
     }
@@ -91,11 +89,10 @@ export function Home() {
       await clientService.update(clientId, clientData);
       loadClients();
       toast.current.show({
-        severity: 'Sucess',
+        severity: 'success',
         summary: 'Informações editadas com sucesso',
       });
-    } 
-    catch (error) {
+    } catch (error) {
       console.log('Ocorreu erro: ', error);
     }
   }
@@ -105,7 +102,7 @@ export function Home() {
       await clientService.deleteClient(clientData.id);
       loadClients();
       toast.current.show({
-        severity: 'Sucess',
+        severity: 'success',
         summary: 'Cliente excluido com sucesso',
       });
     } catch (error) {
@@ -130,6 +127,5 @@ export function Home() {
       />
       <Toast ref={toast} />
     </div>
-
-);
+  );
 }
