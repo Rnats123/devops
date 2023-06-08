@@ -315,7 +315,7 @@ export function Modal({ visible, onClose, onSubmit, currentClient }) {
               value={formData.state}
               options={states}
               optionLabel="nome"
-              placeholder="Selecione a Cidade"
+              placeholder="Selecione o Estado"
               onChange={(e) => {
                 setErrors({ ...errors, state: false });
                 handleStateChange(e);
